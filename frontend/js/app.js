@@ -100,6 +100,8 @@ async function checkChain() {
     chainId = 137;
   } else if(chain === 'ethereum') {
     chainId = 1;
+  }else if(chain === "goerli"){
+    chainId = 5;
   }
   if (window.ethereum.networkVersion !== chainId) {
     try {
@@ -133,6 +135,18 @@ async function checkChain() {
                   chainId: web3.utils.toHex(chainId),
                   nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
                   rpcUrls: ['https://polygon-rpc.com/'],
+                },
+              ],
+            });
+          } else if(chain === 'goerli') {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainName: 'Goerli Test Network',
+                  chainId: web3.utils.toHex(chainId),
+                  nativeCurrency: { name: 'GoerliETH', decimals: 18, symbol: 'GoerliETH' },
+                  rpcUrls: ['https://goerli.infura.io/v3/'],
                 },
               ],
             });
@@ -213,6 +227,8 @@ async function loadInfo() {
     priceType = 'ETH';
   } else if (chain === 'polygon') {
     priceType = 'MATIC';
+  }else if(chain === 'goerli'){
+    priceType = 'GoerliETH';
   }
   const price = web3.utils.fromWei(info.runtimeConfig.publicMintPrice, 'ether');
   const pricePerMint = document.getElementById("pricePerMint");
@@ -276,6 +292,8 @@ function setTotalPrice() {
     priceType = 'ETH';
   } else if (chain === 'polygon') {
     priceType = 'MATIC';
+  }else if(chain === 'goerli'){
+    priceType = 'GoerliETH';
   }
   const price = web3.utils.fromWei(totalPriceWei.toString(), 'ether');
   totalPrice.innerText = `${price} ${priceType}`;
