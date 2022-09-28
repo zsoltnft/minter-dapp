@@ -316,7 +316,7 @@ async function mint() {
     try {
       const mintTransaction = await contract.methods
         .mint(amount)
-        .send({ from: window.address, value: value.toString(), maxPriorityFeePerGas: null, maxFeePerGas: null, });
+        .send({ from: window.address, value: value.toString(), maxPriorityFeePerGas: null, maxFeePerGas: null });
       if(mintTransaction) {
         if(chain === 'rinkeby') {
           const url = `https://rinkeby.etherscan.io/tx/${mintTransaction.transactionHash}`;
@@ -326,6 +326,16 @@ async function mint() {
           mintedTxnBtn.href = url;
           countdownContainer.classList.add('hidden');
           mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://testnets.opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
+        }else if(chain === 'polygon') {
+          const url = `https://polygonscan.com/tx/${mintTransaction.transactionHash}`;
+          const mintedContainer = document.querySelector('.minted-container');
+          const countdownContainer = document.querySelector('.countdown');
+          const mintedTxnBtn = document.getElementById("mintedTxnBtn");
+          mintedTxnBtn.href = url;
+          countdownContainer.classList.add('hidden');
+          mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
         }
         console.log("Minted successfully!", `Transaction Hash: ${mintTransaction.transactionHash}`);
       } else {
@@ -351,7 +361,7 @@ async function mint() {
       const merkleJson = await merkleData.json();
       const presaleMintTransaction = await contract.methods
         .presaleMint(amount, merkleJson)
-        .send({ from: window.address, value: value.toString() });
+        .send({ from: window.address, value: value.toString(), maxPriorityFeePerGas: null, maxFeePerGas: null });
       if(presaleMintTransaction) {
         if(chain === 'rinkeby') {
           const url = `https://rinkeby.etherscan.io/tx/${presaleMintTransaction.transactionHash}`;
@@ -361,6 +371,16 @@ async function mint() {
           mintedTxnBtn.href = url;
           countdownContainer.classList.add('hidden');
           mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://testnets.opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
+        }else if(chain === 'polygon') {
+          const url = `https://polygonscan.com/tx/${presaleMintTransaction.transactionHash}`;
+          const mintedContainer = document.querySelector('.minted-container');
+          const countdownContainer = document.querySelector('.countdown');
+          const mintedTxnBtn = document.getElementById("mintedTxnBtn");
+          mintedTxnBtn.href = url;
+          countdownContainer.classList.add('hidden');
+          mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
         }
         console.log("Minted successfully!", `Transaction Hash: ${presaleMintTransaction.transactionHash}`);
       } else {
