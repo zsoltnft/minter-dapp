@@ -100,6 +100,8 @@ async function checkChain() {
     chainId = 137;
   } else if(chain === 'ethereum') {
     chainId = 1;
+  }else if(chain === "goerli"){
+    chainId = 5;
   }
   if (window.ethereum.networkVersion !== chainId) {
     try {
@@ -133,6 +135,18 @@ async function checkChain() {
                   chainId: web3.utils.toHex(chainId),
                   nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
                   rpcUrls: ['https://polygon-rpc.com/'],
+                },
+              ],
+            });
+          } else if(chain === 'goerli') {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainName: 'Goerli Test Network',
+                  chainId: web3.utils.toHex(chainId),
+                  nativeCurrency: { name: 'GoerliETH', decimals: 18, symbol: 'GoerliETH' },
+                  rpcUrls: ['https://goerli.infura.io/v3/'],
                 },
               ],
             });
@@ -213,6 +227,8 @@ async function loadInfo() {
     priceType = 'ETH';
   } else if (chain === 'polygon') {
     priceType = 'MATIC';
+  }else if(chain === 'goerli'){
+    priceType = 'GoerliETH';
   }
   const price = web3.utils.fromWei(info.runtimeConfig.publicMintPrice, 'ether');
   const pricePerMint = document.getElementById("pricePerMint");
@@ -276,6 +292,8 @@ function setTotalPrice() {
     priceType = 'ETH';
   } else if (chain === 'polygon') {
     priceType = 'MATIC';
+  }else if(chain === 'goerli'){
+    priceType = 'GoerliETH';
   }
   const price = web3.utils.fromWei(totalPriceWei.toString(), 'ether');
   totalPrice.innerText = `${price} ${priceType}`;
@@ -298,7 +316,7 @@ async function mint() {
     try {
       const mintTransaction = await contract.methods
         .mint(amount)
-        .send({ from: window.address, value: value.toString() });
+        .send({ from: window.address, value: value.toString(), maxPriorityFeePerGas: null, maxFeePerGas: null });
       if(mintTransaction) {
         if(chain === 'rinkeby') {
           const url = `https://rinkeby.etherscan.io/tx/${mintTransaction.transactionHash}`;
@@ -308,6 +326,16 @@ async function mint() {
           mintedTxnBtn.href = url;
           countdownContainer.classList.add('hidden');
           mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://testnets.opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
+        }else if(chain === 'polygon') {
+          const url = `https://polygonscan.com/tx/${mintTransaction.transactionHash}`;
+          const mintedContainer = document.querySelector('.minted-container');
+          const countdownContainer = document.querySelector('.countdown');
+          const mintedTxnBtn = document.getElementById("mintedTxnBtn");
+          mintedTxnBtn.href = url;
+          countdownContainer.classList.add('hidden');
+          mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
         }
         console.log("Minted successfully!", `Transaction Hash: ${mintTransaction.transactionHash}`);
       } else {
@@ -333,7 +361,7 @@ async function mint() {
       const merkleJson = await merkleData.json();
       const presaleMintTransaction = await contract.methods
         .presaleMint(amount, merkleJson)
-        .send({ from: window.address, value: value.toString() });
+        .send({ from: window.address, value: value.toString(), maxPriorityFeePerGas: null, maxFeePerGas: null });
       if(presaleMintTransaction) {
         if(chain === 'rinkeby') {
           const url = `https://rinkeby.etherscan.io/tx/${presaleMintTransaction.transactionHash}`;
@@ -343,6 +371,16 @@ async function mint() {
           mintedTxnBtn.href = url;
           countdownContainer.classList.add('hidden');
           mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://testnets.opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
+        }else if(chain === 'polygon') {
+          const url = `https://polygonscan.com/tx/${presaleMintTransaction.transactionHash}`;
+          const mintedContainer = document.querySelector('.minted-container');
+          const countdownContainer = document.querySelector('.countdown');
+          const mintedTxnBtn = document.getElementById("mintedTxnBtn");
+          mintedTxnBtn.href = url;
+          countdownContainer.classList.add('hidden');
+          mintedContainer.classList.remove('hidden');
+          document.getElementById("mintedLinkBtn").href = `https://opensea.io/assets?search[query]=${contractAddress.toLowerCase()}`;
         }
         console.log("Minted successfully!", `Transaction Hash: ${presaleMintTransaction.transactionHash}`);
       } else {
